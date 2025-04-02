@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astral Fitness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .saved-plans {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background-color: #f7fafc;
+        }
+        .saved-plans h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #334155;
+        }
+        .saved-plans ul {
+            list-style-position: inside;
+            padding-left: 0;
+        }
+        .saved-plans li {
+            margin-bottom: 5px;
+            color: #4b5563;
+        }
+        .saved-plans button {
+            margin-top: 10px;
+            background-color: #f87171;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 0.875rem;
+            border: none;
+        }
+        .saved-plans button:hover {
+            background-color: #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="mx-auto max-w-2xl bg-white rounded-lg shadow-md p-8">
+        <h1 class="text-3xl font-semibold text-blue-600 text-center mb-6">Astral Fitness</h1>
+
+        <form id="fitnessForm" class="space-y-4">
+            <div>
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name:</label>
+                <input type="text" id="name" name="name" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <div id="name-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+            </div>
+
+            <div>
+                <label for="weight" class="block text-gray-700 text-sm font-bold mb-2">Weight (in kg):</label>
+                <input type="number" id="weight" name="weight" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <div id="weight-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+            </div>
+
+            <div>
+                <label for="focusSpan" class="block text-gray-700 text-sm font-bold mb-2">Focus Span (in minutes):</label>
+                <input type="number" id="focusSpan" name="focusSpan" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                 <div id="focusSpan-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+            </div>
+
+            <div>
+                <label for="muscles" class="block text-gray-700 text-sm font-bold mb-2">Muscles to focus on:</label>
+                <select id="muscles" name="muscles" multiple required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="chest">Chest</option>
+                    <option value="back">Back</option>
+                    <option value="legs">Legs</option>
+                    <option value="arms">Arms</option>
+                    <option value="shoulders">Shoulders</option>
+                    <option value="core">Core</option>
+                </select>
+                 <div id="muscles-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+            </div>
+
+            <div>
+                <label for="reminder" class="block text-gray-700 text-sm font-bold mb-2">Set Reminder:</label>
+                <input type="time" id="reminder" name="reminder" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <button type="submit" class="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Generate Workout Plan
+            </button>
+        </form>
+
+        <div id="workoutPlan" class="mt-6 p-6 bg-gray-50 rounded-lg shadow-inner" style="display: none;">
+            <h2 class="text-2xl font-semibold text-green-600 mb-4">Your Workout Plan</h2>
+            <div id="planDetails" class="space-y-2"></div>
+            <div id="reminderMessage" class="mt-4 text-yellow-600 font-semibold"></div>
+            <button id="savePlan" class="bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Save Workout Plan
+            </button>
+        </div>
+
+        <div id="savedPlans" class="saved-plans" style="display: none;">
+            <h3>Saved Workout Plans</h3>
+            <ul id="savedList">
+            </ul>
+            <button id="clearPlans" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Clear All Plans
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fitnessForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Reset error messages
+            document.getElementById('name-error').style.display = 'none';
+            document.getElementById('weight-error').style.display = 'none';
+            document.getElementById('focusSpan-error').style.display = 'none';
+            document.getElementById('muscles-error').style.display = 'none';
+
+            // Get form values
+            const name = document.getElementById('name').value;
+            const weight = parseFloat(document.getElementById('weight').value);
+            const focusSpan = parseInt(document.getElementById('focusSpan').value);
+            const muscles = Array.from(document.getElementById('muscles').selectedOptions).map(option => option.value);
+            const reminderTime = document.getElementById('reminder').value;
+
+            // Validate inputs
+             let hasErrors = false;
+
+            if (!name.trim()) {
+                document.getElementById('name-error').textContent = 'Please enter your name.';
+                document.getElementById('name-error').style.display = 'block';
+                hasErrors = true;
+            }
+
+            if (isNaN(weight) || weight <= 0) {
+                document.getElementById('weight-error').textContent = 'Please enter a valid weight (greater than 0).';
+                document.getElementById('weight-error').style.display = 'block';
+                hasErrors = true;
+            }
+
+            if (isNaN(focusSpan) || focusSpan <= 0) {
+                document.getElementById('focusSpan-error').textContent = 'Please enter a valid focus span (greater than 0).';
+                document.getElementById('focusSpan-error').style.display = 'block';
+                hasErrors = true;
+            }
+
+             if (muscles.length === 0) {
+                document.getElementById('muscles-error').textContent = 'Please select at least one muscle group.';
+                document.getElementById('muscles-error').style.display = 'block';
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
+                return; // Stop processing if there are errors
+            }
+            // Generate workout plan
+            const workoutPlan = generateWorkoutPlan(weight, focusSpan, muscles, name);
+
+            // Display workout plan
+            const planDetailsDiv = document.getElementById('planDetails');
+            planDetailsDiv.innerHTML = workoutPlan.exercises.map(exercise => `<p class="text-gray-800"><span class="font-semibold text-blue-500">${exercise.name}:</span> ${exercise.sets} sets of ${exercise.reps} reps</p>`).join('');
+            document.getElementById('workoutPlan').style.display = 'block';
+
+            // Set reminder
+            if (reminderTime) {
+                const now = new Date();
+                const reminder = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+                                        parseInt(reminderTime.split(':')[0]), parseInt(reminderTime.split(':')[1]), 0);
+                if (reminder > now) {
+                    const timeDiff = reminder.getTime() - now.getTime();
+                    setTimeout(function() {
+                        alert(`Reminder: It's time for your workout!`);
+                    }, timeDiff);
+                    document.getElementById('reminderMessage').textContent = `Reminder set for ${reminderTime}.`;
+                } else {
+                    document.getElementById('reminderMessage').textContent = `Reminder time is in the past. Please set a future time.`;
+                }
+            } else {
+                document.getElementById('reminderMessage').textContent = '';
+            }
+        });
+
+        function generateWorkoutPlan(weight, focusSpan, muscles, name) {
+            // Basic exercise data (you can expand this)
+            const exercises = {
+                chest: [
+                    { name: "Bench Press", sets: 3, reps: 8 },
+                    { name: "Push-ups", sets: 3, reps: 12 },
+                    { name: "Dumbbell Flyes", sets: 3, reps: 10 }
+                ],
+                back: [
+                    { name: "Pull-ups", sets: 3, reps: 6 },
+                    { name: "Barbell Rows", sets: 3, reps: 8 },
+                    { name: "Lat Pulldowns", sets: 3, reps: 10 }
+                ],
+                legs: [
+                    { name: "Squats", sets: 3, reps: 8 },
+                    { name: "Lunges", sets: 3, reps: 10 },
+                    { name: "Calf Raises", sets: 3, reps: 15 }
+                ],
+                arms: [
+                    { name: "Bicep Curls", sets: 3, reps: 10 },
+                    { name: "Tricep Extensions", sets: 3, reps: 10 },
+                    { name: "Hammer Curls", sets: 3, reps: 12 }
+                ],
+                shoulders: [
+                    { name: "Overhead Press", sets: 3, reps: 8 },
+                    { name: "Lateral Raises", sets: 3, reps: 10 },
+                    { name: "Front Raises", sets: 3, reps: 10 }
+                ],
+                core: [
+                    { name: "Crunches", sets: 3, reps: 15 },
+                    { name: "Plank", sets: 3, reps: 30 },
+                    { name: "Russian Twists", sets: 3, reps: 20 }
+                ]
+            };
+
+            let plan = [];
+            let numExercises = Math.min(muscles.length * 2, Math.floor(focusSpan / 10)); // Adjust based on focus span
+
+            if (numExercises <= 0) {
+                return {
+                    name: name,
+                    exercises: [{ name: "No exercises recommended", sets: 0, reps: 0 }]
+                };
+            }
+
+            const selectedMuscles = new Set(); // To track unique muscles
+
+             while (plan.length < numExercises && selectedMuscles.size < muscles.length) {
+                const muscleIndex = Math.floor(Math.random() * muscles.length);
+                const muscle = muscles[muscleIndex];
+
+                 if (!selectedMuscles.has(muscle)) {
+                        selectedMuscles.add(muscle);
+                        const muscleExercises = exercises[muscle];
+                        if (muscleExercises && muscleExercises.length > 0) {
+                            const exerciseIndex = Math.floor(Math.random() * muscleExercises.length);
+                            plan.push(muscleExercises[exerciseIndex]);
+                        }
+                 }
+             }
+             return { name: name, exercises: plan };
+        }
+
+        // Event listener for the save button
+        document.getElementById('savePlan').addEventListener('click', function() {
+            const name = document.getElementById('name').value;
+            const weight = parseFloat(document.getElementById('weight').value);
+            const focusSpan = parseInt(document.getElementById('focusSpan').value);
+            const muscles = Array.from(document.getElementById('muscles').selectedOptions).map(option => option.value);
+
+            const workoutPlan = generateWorkoutPlan(weight, focusSpan, muscles, name);
+            saveWorkoutPlan(workoutPlan);
+        });
+
+        function saveWorkoutPlan(plan) {
+            let savedPlans = JSON.parse(localStorage.getItem('workoutPlans')) || [];
+            savedPlans.push(plan);
+            localStorage.setItem('workoutPlans', JSON.stringify(savedPlans));
+            displaySavedPlans();
+        }
+
+        function displaySavedPlans() {
+            let savedPlans = JSON.parse(localStorage.getItem('workoutPlans')) || [];
+            const savedList = document.getElementById('savedList');
+            savedList.innerHTML = ''; // Clear the list
+
+            if (savedPlans.length > 0) {
+                document.getElementById('savedPlans').style.display = 'block';
+                savedPlans.forEach((plan, index) => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<span class="font-semibold">${plan.name}:</span> `;
+                    listItem.innerHTML += plan.exercises.map(exercise => `${exercise.name} (${exercise.sets}x${exercise.reps})`).join(', ');
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.classList.add('delete-btn'); // Add a class for styling
+                    deleteButton.dataset.index = index; // Store the index
+                    deleteButton.onclick = function() {
+                        deleteWorkoutPlan(index);
+                    };
+                    listItem.appendChild(deleteButton);
+                    savedList.appendChild(listItem);
+                });
+            } else {
+                document.getElementById('savedPlans').style.display = 'none';
+            }
+        }
+
+        function deleteWorkoutPlan(index) {
+            let savedPlans = JSON.parse(localStorage.getItem('workoutPlans')) || [];
+            savedPlans.splice(index, 1); // Remove the plan at the specified index
+            localStorage.setItem('workoutPlans', JSON.stringify(savedPlans));
+            displaySavedPlans(); // Update the displayed list
+        }
+
+        // Event listener for clearing all plans
+        document.getElementById('clearPlans').addEventListener('click', function() {
+            localStorage.removeItem('workoutPlans');
+            document.getElementById('savedPlans').style.display = 'none';
+            document.getElementById('savedList').innerHTML = '';
+        });
+
+        // Display saved plans on page load
+        displaySavedPlans();
+    </script>
+</body>
+</html>
