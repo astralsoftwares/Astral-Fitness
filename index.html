@@ -1,524 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Astral Fitness</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .container {
-            max-width: 2xl;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 1rem;
-        }
-        .form-card {
-            background-color: white;
-            border-radius: 0.5rem;
-             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-        .form-card:hover {
-             transform: translateY(-0.5rem);
-             box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 3px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .form-title {
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: #202020;
-            margin-bottom: 2rem;
-            text-align: center;
-            letter-spacing: -0.025em;
-        }
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-        .input-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #505050;
-            margin-bottom: 0.75rem;
-            transition: color 0.2s ease;
-        }
-        .input-group:focus-within .input-label {
-            color: #4299e1;
-        }
-        .input-field {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.375rem;
-            border: 1px solid #e0e0e0;
-            font-size: 1rem;
-            color: #303030;
-            box-sizing: border-box;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.16);
-        }
-        .select-field {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.375rem;
-            border: 1px solid #e0e0e0;
-            font-size: 1rem;
-            color: #303030;
-            box-sizing: border-box;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .select-field:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.16);
-        }
-        .error-message {
-            color: #e53e3e;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .submit-button {
-            background-color: #4299e1;
-            color: white;
-            padding: 0.875rem 2rem;
-            border-radius: 0.375rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            border: none;
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-            text-align: center;
-             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-        }
-        .submit-button:hover {
-            background-color: #3182ce;
-             transform: translateY(-0.25rem);
-             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
-        }
-        .submit-button:active {
-            transform: translateY(0);
-             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        .plan-card {
-            background-color: #f7fafc;
-            border-radius: 0.5rem;
-            padding: 2rem;
-            margin-top: 2rem;
-            border: 1px solid #e0e0e0;
-            display: none;
-            animation: slideIn 0.5s ease-in-out;
-        }
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(2rem);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .plan-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 1.5rem;
-             letter-spacing: -0.025em;
-        }
-        .plan-details {
-            margin-bottom: 2rem;
-            line-height: 1.75;
-            font-size: 1.125rem;
-            color: #4a5568;
-        }
-        .exercise-name {
-            font-weight: 600;
-            color: #4299e1;
-            margin-right: 0.5rem;
-        }
-        .reminder-message {
-            background-color: #fff5f5;
-            border-left: 4px solid #f56565;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-            border-radius: 0.375rem;
-            color: #e53e3e;
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .saved-plans {
-            margin-top: 2.5rem;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            background-color: #f7fafc;
-            border: 1px solid #e0e0e0;
-        }
-        .saved-plans h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 1.5rem;
-             letter-spacing: -0.025em;
-        }
-        .saved-plans ul {
-            list-style-position: inside;
-            padding-left: 0;
-            margin-bottom: 1.25rem;
-            font-size: 1.125rem;
-            color: #4a5568;
-        }
-        .saved-plans li {
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .delete-button {
-            background-color: #f56565;
-            color: white;
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-            border: none;
-            margin-left: 0.75rem;
-             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-        }
-        .delete-button:hover {
-            background-color: #c53030;
-             transform: scale(1.05);
-             box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1);
-        }
-        .delete-button:active {
-            background-color: #e53e3e;
-            transform: scale(0.95);
-             box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-        }
-        .clear-button {
-            background-color: #4a5568;
-            color: white;
-            padding: 0.875rem 2rem;
-            border-radius: 0.375rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            border: none;
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-            text-align: center;
-            margin-top: 1.5rem;
-             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-        }
-        .clear-button:hover {
-            background-color: #2d3748;
-             transform: translateY(-0.25rem);
-             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
-        }
-        .clear-button:active {
-            background-color: #374151;
-            transform: translateY(0);
-             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Customization Options */
-        .settings-card {
-            background-color: white;
-            border-radius: 0.5rem;
-             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-        .settings-card:hover {
-             transform: translateY(-0.5rem);
-             box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 3px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .settings-title {
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: #202020;
-            margin-bottom: 2rem;
-            text-align: left;
-             letter-spacing: -0.025em;
-        }
-        .color-group {
-            margin-bottom: 1.5rem;
-        }
-        .color-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #505050;
-            margin-bottom: 0.75rem;
-            transition: color 0.2s ease;
-        }
-        .color-group:focus-within .color-label {
-            color: #4299e1;
-        }
-        .color-input {
-            width: 100%;
-            height: 2.75rem;
-            border-radius: 0.375rem;
-            border: 1px solid #e0e0e0;
-            padding: 0.5rem;
-            box-sizing: border-box;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .color-input:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.16);
-        }
-        .font-group {
-            margin-bottom: 1.5rem;
-        }
-        .font-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #505050;
-            margin-bottom: 0.75rem;
-            transition: color 0.2s ease;
-        }
-        .font-group:focus-within .font-label {
-            color: #4299e1;
-        }
-        .font-select {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.375rem;
-            border: 1px solid #e0e0e0;
-            font-size: 1rem;
-            color: #303030;
-            box-sizing: border-box;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .font-select:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.16);
-        }
-        .button-group {
-            margin-top: 2.5rem;
-            text-align: center;
-        }
-        .apply-button {
-            background-color: #48bb78;
-            color: white;
-            padding: 0.875rem 2rem;
-            border-radius: 0.375rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            border: none;
-            margin: 0 0.5rem;
-             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-        }
-        .apply-button:hover {
-            background-color: #38a169;
-             transform: translateY(-0.25rem);
-             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
-        }
-        .apply-button:active {
-            background-color: #38a169;
-            transform: translateY(0);
-             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        .reset-button {
-            background-color: #cbd5e0;
-            color: #2d3748;
-            padding: 0.875rem 2rem;
-            border-radius: 0.375rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            border: none;
-            margin: 0 0.5rem;
-             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-        }
-        .reset-button:hover {
-            background-color: #a0aec0;
-             transform: translateY(-0.25rem);
-             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
-        }
-        .reset-button:active {
-            background-color: #a0aec0;
-            transform: translateY(0);
-             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        .settings-tab {
-            display: none;
-        }
-        .settings-tab.active {
-            display: block;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        .tab-link {
-            padding: 0.875rem 2rem;
-            border-radius: 0.375rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            border: none;
-            margin: 0 0.75rem;
-            color: #4a5568;
-            background-color: #edf2f7;
-             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-        }
-        .tab-link:hover {
-            background-color: #e2e8f0;
-            color: #2d3748;
-             transform: translateY(-0.25rem);
-             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
-        }
-        .tab-link:active {
-            background-color: #e2e8f0;
-            color: #2d3748;
-            transform: translateY(0);
-             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        .tab-link.active {
-            background-color: #4299e1;
-            color: white;
-             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-        }
-        .tabs-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitness Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
-    <div class="container">
-        <div class="tabs-container">
-            <button class="tab-link active" data-tab="fitnessForm">Workout Form</button>
-            <button class="tab-link" data-tab="settings">Settings</button>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md bg-white p-6 rounded-2xl shadow-xl">
+    <h1 class="text-2xl font-bold text-center mb-4">Create Your Fitness Profile</h1>
+    <form id="fitnessForm" class="space-y-4">
+      <div>
+        <label class="block font-medium">Name</label>
+        <input type="text" name="name" class="w-full p-2 border rounded-xl" required />
+      </div>
+      <div>
+        <label class="block font-medium">Weight (kg)</label>
+        <input type="number" name="weight" class="w-full p-2 border rounded-xl" required />
+      </div>
+      <div>
+        <label class="block font-medium">Target Muscles</label>
+        <div class="flex flex-wrap gap-2">
+          <label><input type="checkbox" name="muscles" value="arms" /> Arms</label>
+          <label><input type="checkbox" name="muscles" value="legs" /> Legs</label>
+          <label><input type="checkbox" name="muscles" value="core" /> Core</label>
+          <label><input type="checkbox" name="muscles" value="back" /> Back</label>
+          <label><input type="checkbox" name="muscles" value="chest" /> Chest</label>
         </div>
+      </div>
+      <div>
+        <label class="block font-medium">Focus Span (mins)</label>
+        <select name="focusSpan" class="w-full p-2 border rounded-xl">
+          <option value="15">15</option>
+          <option value="30">30</option>
+          <option value="45">45</option>
+          <option value="60">60</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-medium">Preferred Workout Time</label>
+        <input type="time" name="time" class="w-full p-2 border rounded-xl" required />
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700">Save</button>
+    </form>
+  </div>
 
-        <div id="fitnessForm" class="form-card settings-tab active">
-            <h1 class="form-title">Astral Fitness</h1>
-            <form class="form-content" id="fitnessFormContent">
-                <div class="input-group">
-                    <label for="name" class="input-label">Name:</label>
-                    <input type="text" id="name" name="name" required class="input-field" placeholder="Enter your name">
-                    <div id="name-error" class="error-message"></div>
-                </div>
-                <div class="input-group">
-                    <label for="weight" class="input-label">Weight (in kg):</label>
-                    <input type="number" id="weight" name="weight" required class="input-field" placeholder="Enter your weight">
-                    <div id="weight-error" class="error-message"></div>
-                </div>
-                <div class="input-group">
-                    <label for="focusSpan" class="input-label">Focus Span (in minutes):</label>
-                    <input type="number" id="focusSpan" name="focusSpan" required class="input-field" placeholder="Enter your focus span">
-                    <div id="focusSpan-error" class="error-message"></div>
-                </div>
-                <div class="input-group">
-                    <label for="muscles" class="input-label">Muscles to focus on:</label>
-                    <select id="muscles" name="muscles" multiple required class="select-field">
-                        <option value="chest">Chest</option>
-                        <option value="back">Back</option>
-                        <option value="legs">Legs</option>
-                        <option value="arms">Arms</option>
-                        <option value="shoulders">Shoulders</option>
-                        <option value="core">Core</option>
-                    </select>
-                    <div id="muscles-error" class="error-message"></div>
-                </div>
-                <div class="input-group">
-                    <label for="reminder" class="input-label">Set Reminder:</label>
-                    <input type="time" id="reminder" name="reminder" class="input-field">
-                </div>
-                <button type="submit" class="submit-button">Generate Workout Plan</button>
-            </form>
-        </div>
-
-        <div id="settings" class="settings-card settings-tab">
-            <h2 class="settings-title">Customize Your Website</h2>
-            <div class="color-group">
-                <label for="primaryColor" class="color-label">Primary Color:</label>
-                <input type="color" id="primaryColor" class="color-input" value="#4299e1">
-            </div>
-            <div class="color-group">
-                <label for="secondaryColor" class="color-label">Secondary Color:</label>
-                <input type="color" id="secondaryColor" class="color-input" value="#f56565">
-            </div>
-            <div class="font-group">
-                <label for="fontFamily" class="font-label">Font Family:</label>
-                <select id="fontFamily" class="font-select">
-                    <option value="Inter, sans-serif">Inter</option>
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="Verdana, sans-serif">Verdana</option>
-                    <option value="Roboto, sans-serif">Roboto</option>
-                    <option value="Open Sans, sans-serif">Open Sans</option>
-                </select>
-            </div>
-            <div class="button-group">
-                <button id="applyCustomization" class="apply-button">Apply</button>
-                <button id="resetCustomization" class="reset-button">Reset</button>
-            </div>
-        </div>
-
-        <div id="workoutPlan" class="plan-card settings-tab">
-            <h2 class="plan-title">Your Workout Plan</h2>
-            <div id="planDetails" class="plan-details"></div>
-            <div id="reminderMessage" class="reminder-message"></div>
-            <button id="savePlan" class="submit-button">Save Workout Plan</button>
-        </div>
-
-        <div id="savedPlans" class="saved-plans settings-tab" style="display: none;">
-            <h3>Saved Workout Plans</h3>
-            <ul id="savedList">
-            </ul>
-            <button id="clearPlans" class="clear-button">
-                Clear All Plans
-            </button>
-        </div>
-    </div>
-
-    <script>
-        const tabs = document.querySelectorAll('.tab-link');
-        const tabContents = document.querySelectorAll('.settings-tab');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tabContents.forEach(c => c.classList.remove('active'));
-                const target = tab.dataset.tab;
-                document.getElementById(target).classList.add('active');
-                tab.classList.add('active');
-            });
-        });
-
-        document.getElementById('fitnessFormContent').addEventListener('submit', function(event) { // Corrected ID.
-            event.preventDefault();
-
-            // Reset error messages
-            document.getElementById('name-error').style.display = 'none';
-            document.getElementById('weight-error').style.display = 'none';
-            document.getElementById('focusSpan-error').style.display = 'none';
-            document.getElementByI
+  <script>
+    document.getElementById('fitnessForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = {
+        name: formData.get('name'),
+        weight: formData.get('weight'),
+        muscles: formData.getAll('muscles'),
+        focusSpan: formData.get('focusSpan'),
+        time: formData.get('time')
+      };
+      console.log('User Data:', data);
+      alert('Profile saved! (This will later be stored in Firebase)');
+    });
+  </script>
+</body>
+</html>
