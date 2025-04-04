@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fitness Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
   <div class="w-full max-w-md bg-white p-6 rounded-2xl shadow-xl">
@@ -46,18 +47,29 @@
   </div>
 
   <script>
-    document.getElementById('fitnessForm').addEventListener('submit', function (e) {
+    const SUPABASE_URL = "https://wdhuvaeejbmngwrlyfzy.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkaHV2YWVlamJtbmd3cmx5Znp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTg0OTgsImV4cCI6MjA1OTM3NDQ5OH0.RjyOlcfLsxQlu4wemRPY_vf2VCMMnS-ETB9QKnGpJSE";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.getElementById('fitnessForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const formData = new FormData(this);
       const data = {
         name: formData.get('name'),
-        weight: formData.get('weight'),
+        weight: parseInt(formData.get('weight')),
         muscles: formData.getAll('muscles'),
-        focusSpan: formData.get('focusSpan'),
+        focus_span: parseInt(formData.get('focusSpan')),
         time: formData.get('time')
       };
-      console.log('User Data:', data);
-      alert('Profile saved! (This will later be stored in Firebase)');
+
+      const { error } = await supabase.from('users').insert([data]);
+      
+      if (error) {
+        console.error('Error saving data:', error);
+        alert('Failed to save profile!');
+      } else {
+        alert('Profile saved successfully!');
+      }
     });
   </script>
 </body>
