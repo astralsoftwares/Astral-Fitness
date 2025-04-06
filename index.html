@@ -3,72 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fitness Tracker</title>
+  <title>Astral Fitness - Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-  <div class="w-full max-w-md bg-white p-6 rounded-2xl shadow-xl">
-    <h1 class="text-2xl font-bold text-center mb-4">Create Your Fitness Profile</h1>
-    <form id="fitnessForm" class="space-y-4">
+  <div class="w-full max-w-sm bg-white p-6 rounded-2xl shadow-xl">
+    <h1 class="text-2xl font-bold text-center mb-4">Astral Fitness</h1>
+
+    <form id="authForm" class="space-y-4">
       <div>
-        <label class="block font-medium">Name</label>
-        <input type="text" name="name" class="w-full p-2 border rounded-xl" required />
+        <label class="block font-medium">Email</label>
+        <input type="email" name="email" required class="w-full p-2 border rounded-xl" />
       </div>
       <div>
-        <label class="block font-medium">Weight (kg)</label>
-        <input type="number" name="weight" class="w-full p-2 border rounded-xl" required />
+        <label class="block font-medium">Password</label>
+        <input type="password" name="password" required class="w-full p-2 border rounded-xl" />
       </div>
-      <div>
-        <label class="block font-medium">Target Muscles</label>
-        <div class="flex flex-wrap gap-2">
-          <label><input type="checkbox" name="muscles" value="arms" /> Arms</label>
-          <label><input type="checkbox" name="muscles" value="legs" /> Legs</label>
-          <label><input type="checkbox" name="muscles" value="core" /> Core</label>
-          <label><input type="checkbox" name="muscles" value="back" /> Back</label>
-          <label><input type="checkbox" name="muscles" value="chest" /> Chest</label>
-        </div>
-      </div>
-      <div>
-        <label class="block font-medium">Focus Span (mins)</label>
-        <select name="focusSpan" class="w-full p-2 border rounded-xl">
-          <option value="15">15</option>
-          <option value="30">30</option>
-          <option value="45">45</option>
-          <option value="60">60</option>
-        </select>
-      </div>
-      <div>
-        <label class="block font-medium">Preferred Workout Time</label>
-        <input type="time" name="time" class="w-full p-2 border rounded-xl" required />
-      </div>
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700">Save</button>
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700">Login</button>
     </form>
+
+    <p class="text-sm text-center mt-4">
+      <span id="toggleText">Don't have an account?</span>
+      <button id="toggleMode" class="text-blue-600 font-medium hover:underline">Sign Up</button>
+    </p>
   </div>
 
   <script>
-    const SUPABASE_URL = "https://wdhuvaeejbmngwrlyfzy.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkaHV2YWVlamJtbmd3cmx5Znp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTg0OTgsImV4cCI6MjA1OTM3NDQ5OH0.RjyOlcfLsxQlu4wemRPY_vf2VCMMnS-ETB9QKnGpJSE";
+    const SUPABASE_URL = "https://mjaysuemidrkxphayfjn.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qYXlzdWVtaWRya3hwaGF5ZmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5ODI3ODQsImV4cCI6MjA1OTU1ODc4NH0.YTeyCbeW3YVxxh5Eqb5kH-yf__KlVcI9yBHwujKQNtY";
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    document.getElementById('fitnessForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const data = {
-        name: formData.get('name'),
-        weight: parseInt(formData.get('weight')),
-        muscles: formData.getAll('muscles'),
-        focus_span: parseInt(formData.get('focusSpan')),
-        time: formData.get('time')
-      };
+    let isLogin = true;
+    const form = document.getElementById('authForm');
+    const toggleBtn = document.getElementById('toggleMode');
+    const toggleText = document.getElementById('toggleText');
 
-      const { error } = await supabase.from('users').insert([data]);
-      
-      if (error) {
-        console.error('Error saving data:', error);
-        alert('Failed to save profile!');
+    toggleBtn.addEventListener('click', () => {
+      isLogin = !isLogin;
+      form.querySelector('button').textContent = isLogin ? 'Login' : 'Sign Up';
+      toggleText.textContent = isLogin ? "Don't have an account?" : "Already have an account?";
+      toggleBtn.textContent = isLogin ? 'Sign Up' : 'Login';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = form.email.value;
+      const password = form.password.value;
+
+      let result;
+      if (isLogin) {
+        result = await supabase.auth.signInWithPassword({ email, password });
       } else {
-        alert('Profile saved successfully!');
+        result = await supabase.auth.signUp({ email, password });
+      }
+
+      if (result.error) {
+        alert('Error: ' + result.error.message);
+      } else {
+        alert(isLogin ? 'Logged in!' : 'Signed up successfully!');
+        // Redirect to fitness form
+        window.location.href = "index.html";
       }
     });
   </script>
