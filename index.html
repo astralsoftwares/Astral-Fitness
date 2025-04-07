@@ -58,11 +58,14 @@
         result = await supabase.auth.signUp({ email, password });
       }
 
+      console.log(result); // This logs the full response
+
       if (result.error) {
+        console.error('Supabase Error:', result.error);
         alert('Error: ' + result.error.message);
       } else {
+        console.log('Success:', result.data);
         alert(isLogin ? 'Logged in!' : 'Signed up successfully!');
-        // Redirect to fitness form
         window.location.href = "index.html";
       }
     });
